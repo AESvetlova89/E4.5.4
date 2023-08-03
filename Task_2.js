@@ -1,13 +1,6 @@
-//функцию, которая принимает в качестве аргументов строку и объект,\
-// а затем проверяет есть ли у переданного объекта свойство с данным именем.
-// Функция должна возвращать true или false.
-function checkAttr(str, obj){
-    return obj[str] != undefined
+function myFunction(str, obj) {
+    return obj.hasOwnProperty(str)
 }
 
-const obj = {
-    name: 'yan',
-    age: 5
-}
-console.log(checkAttr('age', obj))
-console.log(checkAttr('mail', obj))
+x = { '1': 'One', '2': 'Two' };
+console.log(myFunction('2', x))

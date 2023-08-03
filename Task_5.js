@@ -1,62 +1,107 @@
-// Переписать консольное приложение из предыдущего юнита на классы. +
+let electricityСonsumption = 0;
 
-// План:
-//     Определить родительскую функцию с методами, которые включают/выключают прибор из розетки. +
-//     Создать делегирующую связь [[Prototype]] для двух конкретных приборов. +
-//     У каждого из приборов должны быть собственные свойства и, желательно, методы, отличные от родительских методов. +
-//     Создать экземпляры каждого прибора. +
-//     Вывести в консоль и посмотреть результаты работы, гордиться собой. :) +
-
-// Общие требования:
-//      Имена классов, свойств и методов должны быть информативными; +
-//      Соблюдать best practices; +
-//      Использовать синтаксис ES6. +
-
-//Класс девайс
-class Device{
-    constructor(name) {
-    this.name = name;
-  //   this.electric = electric;
-  //   this.switchon = switchon;
+class Device {
+    constructor() {
+        this.name = 'прибор';
+        this.consumption = 0;
+        this.status = {
+            'plugged': false,
+            'on': false,
+        }
     }
-  }
-  //Клас электронные девайсы
-  class ElectricDevice extends Device{
-    constructor(name, power, electric, switchon ){
-    super(name);
-    this.power = power;
-    this.electric = electric;
-    this.switchon = switchon;
-    this. showPower = function(){
-      console.log(power)
+    plugIn() {
+        if (!this.status['plugged']) {
+            console.log(`Вы подключили ваш ${this.name}.`)
+            this.status['plugged'] = true
+        } else {
+            console.log(`Ваш ${this.name} уже подключен.`)
+        }
     }
-  }
-    electricDeviceWork(){
-    let work = false
-      if (this.electric && this.switchon) {
-        work = true;
-      }
-     return work;
-  }
+
+    unPlug() {
+        if (this.status['plugged']) {
+            console.log(`Вы отключили ваш ${this.name}.`)
+            this.status['plugged'] = false
+            this.status['on'] = false
+        } else {
+            console.log(`Ваш ${this.name} уже отключен.`)
+        }
+    }
+    switchOn() {
+        if (this.status['plugged']) {
+            if (!this.status['on']) {
+                console.log(`${this.name} включен!`)
+                electricityСonsumption += this.consumption;
+                this.status['on'] = true
+            } else { console.log(`Невозможно это сделать. ${this.name} уже включен!`) }
+        } else { console.log(`Сначала подключите ${this.name} к розетке!`) }
+    }
+
+    switchOff() {
+        if (this.status['on']) {
+            console.log(`${this.name} выключен!`)
+            this.status['on'] = false
+        } else { console.log(`Невозможно это сделать. ${this.name} уже выключен!`) }
+    }
+
+    getPowerConsumption() {
+        console.log(`Потребление электричества всеми приборами в доме ${electricityСonsumption} кв/ч.`)
+    };
+
 }
-function sumPower(ElecDiv){
-      let sum = 0;
-     for(let value of ElecDiv){
-      if (value.electricDeviceWork()){
-          sum += value.power;
-      }else{
-          sum;
-      }
-     }
-    return sum;
-  }
-  const lamp = new ElectricDevice("lampa", 30, true, true);
-  const comp = new ElectricDevice("compyter", 20, true, true);
-  const flight = new ElectricDevice("televisor", 10, true, false);
- let ElecDiv = [lamp, comp, flight];
- console.log('Проверяем включена ли лампа?');
- console.log(lamp.electricDeviceWork());
- console.log('Потребляемая мощъность включенных электроприборов');
- console.log(sumPower(ElecDiv));
-console.log('Мощъность лампы');
-lamp.showPower();
+
+class Iron extends Device {
+    constructor(company, power) {
+        super();
+        this.name = `утюг ${company}`;
+        this.consumption = Math.round(power / 10);
+    }
+    plugIn() { return super.plugIn() }
+    unPlug() { return super.unPlug() }
+    switchOn() { return super.switchOn() }
+    switchOff() { return super.switchOff() }
+    spray() {
+        if (this.status['on']) {
+            console.log(`Отпаривание...`)
+            electricityСonsumption += Math.round(this.consumption / 2)
+        } else { console.log(`Невозможно отпарить, ${this.name} выключен!`) }
+    }
+}
+
+class TvSet extends Device {
+    constructor(company, power, size) {
+        super();
+        this.name = `телевизор ${company}`;
+        this.consumption = Math.round(power / 10);
+        this.size = size
+    }
+    plugIn() { return super.plugIn() }
+    unPlug() { return super.unPlug() }
+    switchOn() { return super.switchOn() }
+    switchOff() { return super.switchOff() }
+    setUp() {
+        if (this.status['on']) {
+            console.log(`Настройка каналов...`)
+        } else { console.log(`Невозможно настроить каналы. Сначала включите ваш ${this.name}!`) }
+    }
+    getInfo() {
+        console.log(`Ваш ${this.name} с диагональю экрана ${this.size} дюймов.`)
+    }
+}
+
+myIron = new Iron('Bosch', 880)
+myTv = new TvSet('Sharp', 250, 55)
+
+
+myIron.plugIn()
+myIron.switchOn()
+myIron.getPowerConsumption()
+myIron.spray()
+myIron.getPowerConsumption()
+myTv.plugIn()
+myTv.switchOn()
+myTv.unPlug()
+myTv.setUp()
+myTv.getInfo()
+myTv.unPlug()
+myIron.getPowerConsumption()

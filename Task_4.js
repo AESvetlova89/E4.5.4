@@ -1,61 +1,135 @@
-// Реализовать следующее консольное приложение подобно примеру, который разбирался в видео.
-// Реализуйте его на прототипах.
+let electricityСonsumption = 0;
 
-// Определить иерархию электроприборов. Включить некоторые в розетку. Посчитать потребляемую мощность.
-
-// Таких приборов должно быть, как минимум, два (например, настольная лампа и компьютер).
-// Выбрав прибор, подумайте, какими свойствами он обладает.
-
-
-// План:
-//     Определить родительскую функцию с методами, которые включают/выключают прибор из розетки. +
-//     Создать делегирующую связь [[Prototype]] для двух конкретных приборов. +
-//     У каждого из приборов должны быть собственные свойства и, желательно, методы, отличные от родительских методов. +
-//     Создать экземпляры каждого прибора. +
-//     Вывести в консоль и посмотреть результаты работы, гордиться собой. :) +
-
-
-// Общие требования:
-//     Имена функций, свойств и методов должны быть информативными. +
-
-//     Соблюдать best practices:
-//          использование camelCase нотации для переменных и методов,
-//          PascalCase для названия функций-конструкторов и классов; +
-
-//          информативные имена (а не a, b); +
-
-//          четкая связь между классом и его экземплярами
-//          (класс описывает множество, а экземпляр конкретную реализацию); +
-
-//          использование синтаксиса ES6 (кроме функции-конструкторов) и т. д. +
-
-function OpenClose() {
-    this.socketOn = function () {
-        return true
+function Device() {
+    this.name = 'прибор';
+    this.status = {
+        'plugged': false,
+        'on': false,
     }
-    this.socketOff = function () {
-        return false
-    }
-}
 
-function Teh(name, serialNr, socketCondition, compute) {
-    this.name = name
-    this.serialNr = serialNr
-    this.socketCondition = socketCondition
-    this.compute = function () {
-        if (socketCondition) {
-            return compute * (12 * 2) / 1000
+    this.plugIn = () => {
+        if (!this.status['plugged']) {
+            console.log(`Вы подключили ваш ${this.name}.`)
+            this.status['plugged'] = true
         } else {
-            return "Not plugged in!"
+            console.log(`${this.name} уже подключен.`)
         }
+    }
 
+    this.unPlug = () => {
+        if (this.status['plugged']) {
+            console.log(`Вы отключили ваш ${this.name}.`)
+            this.status['plugged'] = false
+            this.status['on'] = false
+        } else {
+            console.log(`${this.name} уже отключен.`)
+        }
+    }
+
+    this.switchOn = () => {
+        if (this.status['plugged']) {
+            if (!this.status['on']) {
+                console.log(`${this.name} включен!`)
+                electricityСonsumption += 50;
+                this.status['on'] = true
+            } else { console.log(`Невозможно это сделать. ${this.name} уже включен!`) }
+        } else { console.log(`Сначала подключите ${this.name} к розетке!`) }
+    }
+
+    this.switchOff = () => {
+        if (this.status['on']) {
+            console.log(`${this.name} выключен!`)
+            this.status['on'] = false
+        } else { console.log(`Невозможно это сделать. ${this.name} уже выключен!`) }
+    }
+
+    this.getPowerConsumption = () => {
+        console.log(`Потребление электричества всеми приборами в доме ${electricityСonsumption} кв/ч.`)
+    };
+
+}
+
+function Iron(company, power) {
+    this.name = `утюг ${company}`;
+    this.power = power;
+
+    this.switchOn = () => {
+        if (this.status['plugged']) {
+            if (!this.status['on']) {
+                console.log(`${this.name} включен!`)
+                electricityСonsumption += this.power / 10;
+                this.status['on'] = true
+            } else { console.log(`Невозможно это сделать. ${this.name} уже включен!`) }
+        } else { console.log(`Сначала подключите ${this.name} к розетке!`) }
+    }
+
+    this.switchOff = () => {
+        if (this.status['on']) {
+            console.log(`${this.name} выключен!`)
+            this.status['on'] = false
+        } else { console.log(`Невозможно это сделать, ${this.name} уже выключен!`) }
+    }
+
+    this.spray = () => {
+        if (this.status['on']) {
+            console.log(`Отпаривание...`)
+        } else { console.log(`Невозможно отпарить, ${this.name} выключен!`) }
     }
 }
 
-const action = new OpenClose()
+function TvSet(company, power, size) {
+    this.name = `телевизор ${company}`;
+    this.power = power;
+    this.size = size;
 
-const computer = new Teh("SAMSUNG", "O28347T", action.socketOn(), 100)
-const TV = new Teh("APPLE", "I8W34765TB", action.socketOff(), 4)
+    this.switchOn = () => {
+        if (this.status['plugged']) {
+            if (!this.status['on']) {
+                console.log(`${this.name} включен!`)
+                electricityСonsumption += this.power / 10;
+                this.status['on'] = true;
+            } else { console.log(`Невозможно это сделать. ${this.name} уже включен!`) }
+        } else { console.log(`Сначала подключите ${this.name} к розетке!`) }
+    }
 
-console.log(computer.name, computer.serialNr, computer.compute())
-console.log(TV.name, TV.serialNr, TV.compute())
+    this.switchOff = () => {
+        if (this.status['on']) {
+            console.log(`${this.name} выключен!`)
+            this.status['on'] = false;
+        } else { console.log(`Невозможно это сделать. ${this.name} уже выключен!`) }
+    }
+
+    this.setUp = () => {
+        if (this.status['on']) {
+            console.log(`Настройка каналов...`)
+        } else { console.log(`Сначала включите ваш ${this.name}!`) }
+    }
+
+    this.getInfo = function () {
+        console.log(`Ваш ${this.name} с диагональю экрана ${this.size} дюймов.`)
+    }
+}
+
+Iron.prototype = new Device()
+TvSet.prototype = new Device()
+
+
+let myIron = new Iron('Philips', 800);
+let myTv = new TvSet('Hisense', 200, 65);
+
+myIron.plugIn()
+myIron.switchOn()
+console.log(myIron.status)
+myIron.spray()
+myIron.getPowerConsumption()
+myIron.switchOff()
+myIron.switchOn()
+myIron.unPlug()
+myTv.switchOn()
+myTv.plugIn()
+myTv.getInfo()
+myTv.switchOn()
+myTv.setUp()
+myTv.switchOff()
+myTv.getPowerConsumption()
+myTv.unPlug()
